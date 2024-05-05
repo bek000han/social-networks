@@ -1,7 +1,5 @@
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 public class GraphTool {
     private Graph target;
@@ -12,8 +10,8 @@ public class GraphTool {
         this.head = this.target.getHeadNode();
     }
 
-    public float density() {
-        Node node = head;
+    public double density() {
+        Node node = this.head;
         int nodes = 0;
         int edges = 0;
         while (node != null) {
@@ -21,7 +19,7 @@ public class GraphTool {
             edges += node.getNumberOfFollows();
             node = node.getNextNode();
         }
-        return (edges / (nodes * (nodes - 1)));
+        return (1.0 * edges / (nodes * (nodes - 1)));
     }
 
     public String mostFollowed() {
@@ -32,15 +30,17 @@ public class GraphTool {
         // set up hash map keys
         while (node != null) {
             map.put(node.getUsername(), Integer.valueOf(0));
-            node.getNextNode();
+            node = node.getNextNode();
         }
 
         // tally according to the follows of each node
+        node = head;
         while (node != null) {
             LinkedHashSet<Node> follows = node.getFollows();
             for (Node followee : follows) {
-                map.put(followee.getUsername(), map.get(followee) + 1);
+                map.put(followee.getUsername(), map.get(followee.getUsername()) + 1);
             }
+            node = node.getNextNode();
         }
 
         // find key with maximum
@@ -55,8 +55,6 @@ public class GraphTool {
                 }
             } else if (followerCount > followerCountMaximum) {
                 maximumNode = user;
-            } else {
-                node = node.getNextNode();
             }
         }
         return maximumNode;
@@ -82,7 +80,7 @@ public class GraphTool {
         return maximumNode.getUsername();
     }
 
-    public float TwoDegreeSeperation() {
+    public float twoDegreeSeperation() {
         return 0;
     }
 
@@ -90,7 +88,16 @@ public class GraphTool {
         return 0;
     }
 
-    public Node mostPropogated() {
+    public String mostPropogated() {
         return null;
+    }
+
+    public void displayResults() {
+        System.out.println("Task 1: " + density());
+        System.out.println("Task 2: " + mostFollowed());
+        System.out.println("Task 3: " + mostFollowing());
+        System.out.println("Task 4: " + twoDegreeSeperation());
+        System.out.println("Task 5: " + median());
+        System.out.println("Task 6: " + mostPropogated());
     }
 }

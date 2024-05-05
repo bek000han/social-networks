@@ -9,22 +9,25 @@ public class Graph {
         this.head = null;
     }
 
-    public void addFromFile(String fileToRead) {
-
+    public void populateFromFile(String fileToRead) {
         // Gets all users line by line  from file and splits into String array
         try {
             File file = new File(fileToRead);
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                String[] users = line.split(line);
+                if (line.isEmpty()) {
+                    continue;
+                }
+                String[] users = line.split(" ");
 
                 // first user in the file line is the head node
-                // created if does not exist
+                // created if does not exist    
                 Node headNode = findNode(users[0]);
                 if (headNode == null) {
                     Node newNode = new Node(users[0]); 
                     addNode(newNode);
+                    headNode = newNode;
                 }
 
                 // attaches the head to the follows list of the users
@@ -37,7 +40,7 @@ public class Graph {
                             targetNode = new Node(users[i]); 
                             addNode(targetNode);
                         }
-                        targetNode.addFollow(headNode);
+                        headNode.addFollow(targetNode);
                     }
                 }
             }
@@ -52,7 +55,7 @@ public class Graph {
         if (this.head == null) {
             this.head = node;
         } else {
-            this.head.setNextNode(node);
+            node.setNextNode(head);
             this.head = node;
         }
     }
@@ -63,6 +66,7 @@ public class Graph {
             if (node.getUsername().compareTo(target) == 0) {
                 return node;
             }
+            node = node.getNextNode();
         }
         return null;
     }
