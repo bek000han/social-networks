@@ -1,35 +1,42 @@
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
 
 public class Node {
     private String username;
-    private List<Node> followers;
+    private LinkedHashSet<Node> follows; //using linkedhashset as it is faster and more convenient than other data strcts.
+    private Node nextNode;
     
     public Node(String name) {
         this.username = name;
-        this.followers = new ArrayList<Node>();
+        this.follows = new LinkedHashSet<Node>();
+        this.nextNode = null;
     }
 
     public Node getNode() {
         return this;
     }
 
+    public void setNextNode(Node node) {
+        this.nextNode = node;
+    }
+
+    public Node getNextNode() {
+        return this.nextNode;
+    }
+
     public String getUsername() {
         return this.username;
     }
 
-    public List<Node> getFollowers() {
-        return this.followers;
+    public LinkedHashSet<Node> getFollows() {
+        return this.follows;
     }
 
-    public int getNumberOfFollowers() {
-        return this.followers.size();
+    public int getNumberOfFollows() {
+        return this.follows.size();
     }
 
-    public void addFollower(Node follower) {
-        this.followers.add(follower);
+    public void addFollow(Node follow) {
+        this.follows.add(follow);
     }
 
 }
