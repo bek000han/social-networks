@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 
@@ -61,8 +62,8 @@ public class GraphTool {
     }
     
     public String mostFollowing() {
-        Node node = head;
         Node maximumNode = head;
+        Node node = head.getNextNode();
         while (node != null) {
             int followsCount = node.getNumberOfFollows();
             int followsCountMaximum = maximumNode.getNumberOfFollows();
@@ -73,9 +74,8 @@ public class GraphTool {
                 }
             } else if (followsCount > followsCountMaximum) {
                 maximumNode = node;
-            } else {
-                node = node.getNextNode();
             }
+            node = node.getNextNode();
         }
         return maximumNode.getUsername();
     }
@@ -84,8 +84,20 @@ public class GraphTool {
         return 0;
     }
 
-    public float median() {
-        return 0;
+    public float medianOfFollowers() {
+        Node node = this.head;
+        ArrayList<Integer> followerCounts = new ArrayList<>();
+        while (node != null) {
+            followerCounts.add(node.getNumberOfFollows());
+            node = node.getNextNode();
+        }
+
+        int mid = followerCounts.size() / 2;
+        if (followerCounts.size() % 2 != 0) {
+            return (followerCounts.get(mid));
+        } else {
+            return (followerCounts.get((followerCounts.get(mid) + followerCounts.get(mid - 1)) / 2));
+        }
     }
 
     public String mostPropogated() {
@@ -97,7 +109,7 @@ public class GraphTool {
         System.out.println("Task 2: " + mostFollowed());
         System.out.println("Task 3: " + mostFollowing());
         System.out.println("Task 4: " + twoDegreeSeperation());
-        System.out.println("Task 5: " + median());
+        System.out.println("Task 5: " + medianOfFollowers());
         System.out.println("Task 6: " + mostPropogated());
     }
 }
