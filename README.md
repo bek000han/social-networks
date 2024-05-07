@@ -1,1 +1,1 @@
-*** Project for Summer Term ***
+# Social Networks: Solo Project for Summer Term
