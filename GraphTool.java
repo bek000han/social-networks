@@ -81,6 +81,7 @@ public class GraphTool {
     }
 
     public float twoDegreeSeperation() {
+        Node user = this.head;
         return 0;
     }
 
