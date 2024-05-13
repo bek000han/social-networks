@@ -1,16 +1,18 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.LinkedHashSet;
 import java.util.Scanner;
 
 public class Graph {
     private Node head;
 
+    // empty graph constructor
     public Graph() {
         this.head = null;
     }
 
-    public void populateFromFile(String fileToRead) {
-        // Gets all users line by line  from file and splits into String array
+    // if file supplied as arg, a populated graph is created from file
+    public Graph(String fileToRead) {
         try {
             File file = new File(fileToRead);
             Scanner scanner = new Scanner(file);
@@ -19,10 +21,11 @@ public class Graph {
                 if (line.isEmpty()) {
                     continue;
                 }
-                String[] users = line.split(" ");
+                String[] users = line.split(" ");                
 
                 // first user in the file line is the head node
-                // created if does not exist    
+                // headnode is needed to sort out the follows
+                // if given user does not exist, they are created in the graph  
                 Node headNode = findNode(users[0]);
                 if (headNode == null) {
                     Node newNode = new Node(users[0]); 
@@ -32,7 +35,7 @@ public class Graph {
 
                 // attaches the head to the follows list of the users
                 // if they don't exist they get added as nodes
-                // skips operation if no users followed (array size 1)
+                // skips operations if no users followed (array size 1)
                 if (users.length > 1) {
                     for (int i = 1; i < users.length; i++) {
                         Node targetNode = findNode(users[i]);
@@ -50,7 +53,8 @@ public class Graph {
         }
     }
 
-    // sets head if graph is empty || pushes list down and sets new head
+    // sets head as node if graph is empty OR
+    // pushes list down and sets new head as given node
     public void addNode(Node node) {
         if (this.head == null) {
             this.head = node;
@@ -61,17 +65,31 @@ public class Graph {
     }
 
     public Node findNode(String target) {
-        Node node = this.head;
-        while (node != null) {
-            if (node.getUsername().compareTo(target) == 0) {
-                return node;
+        Node currentNode = this.head;
+        while (currentNode != null) {
+            if (currentNode.getUsername().compareTo(target) == 0) {
+                return currentNode;
             }
-            node = node.getNextNode();
+            currentNode = currentNode.getNextNode();
         }
         return null;
     }
 
     public Node getHeadNode() {
         return this.head;
+    }
+
+    public LinkedHashSet<Node> getFollowersOfNode(String nodeName) {
+        Node currentNode = this.head;
+        Node targetNode = findNode(nodeName);
+        LinkedHashSet<Node> followers = new LinkedHashSet<>();
+
+        while(targetNode != null && currentNode != null) {
+            if (currentNode.getFollows().contains(targetNode)) {
+                followers.add(currentNode);
+            }
+            currentNode = currentNode.getNextNode();
+        }
+        return followers;
     }
 }

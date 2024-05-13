@@ -1,96 +1,89 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Scanner;
 
 public class GraphTool {
-    private Graph target;
+    private Graph graph;
     private Node head;
+    private String fileName;
 
-    public GraphTool(Graph graph) {
-        this.target = graph;
-        this.head = this.target.getHeadNode();
+    public GraphTool(Graph graph, String fileName) {
+        this.graph = graph;
+        this.head = this.graph.getHeadNode();
+        this.fileName = fileName;
     }
 
     public double density() {
-        Node node = this.head;
+        Node currentNode = this.head;
         int nodes = 0;
         int edges = 0;
-        while (node != null) {
+        while (currentNode != null) {
             nodes++;
-            edges += node.getNumberOfFollows();
-            node = node.getNextNode();
+            edges += currentNode.getNumberOfFollows();
+            currentNode = currentNode.getNextNode();
         }
         return (1.0 * edges / (nodes * (nodes - 1)));
     }
 
     public String mostFollowed() {
-        // use a hashmap to tally the follower count
-        HashMap<String, Integer> map = new HashMap<String, Integer>();
-        Node node = head;
+        Node maximumNode = head;
+        Node currentNode = head.getNextNode();
+        while (currentNode != null) {
+            int followersCount = graph.getFollowersOfNode(currentNode.getUsername()).size();
+            int followersCountMaximum = graph.getFollowersOfNode(maximumNode.getUsername()).size();
 
-        // set up hash map keys
-        while (node != null) {
-            map.put(node.getUsername(), Integer.valueOf(0));
-            node = node.getNextNode();
-        }
-
-        // tally according to the follows of each node
-        node = head;
-        while (node != null) {
-            LinkedHashSet<Node> follows = node.getFollows();
-            for (Node followee : follows) {
-                map.put(followee.getUsername(), map.get(followee.getUsername()) + 1);
-            }
-            node = node.getNextNode();
-        }
-
-        // find key with maximum
-        String maximumNode = this.head.getUsername();
-        for (String user : map.keySet()) {
-            int followerCount = map.get(user);
-            int followerCountMaximum = map.get(maximumNode);
-
-            if (followerCount == followerCountMaximum) {
-                if (user.compareTo(maximumNode) < 0) {
-                    maximumNode = user;
+            if (followersCount == followersCountMaximum) {
+                if (currentNode.getUsername().compareTo(maximumNode.getUsername()) < 0) {
+                    maximumNode = currentNode;
                 }
-            } else if (followerCount > followerCountMaximum) {
-                maximumNode = user;
+            } else if (followersCount > followersCountMaximum) {
+                maximumNode = currentNode;
             }
+            currentNode = currentNode.getNextNode();
         }
-        return maximumNode;
+        return maximumNode.getUsername();
     }
     
     public String mostFollowing() {
         Node maximumNode = head;
-        Node node = head.getNextNode();
-        while (node != null) {
-            int followsCount = node.getNumberOfFollows();
+        Node currentNode = head.getNextNode();
+        while (currentNode != null) {
+            int followsCount = currentNode.getNumberOfFollows();
             int followsCountMaximum = maximumNode.getNumberOfFollows();
 
             if (followsCount == followsCountMaximum) {
-                if (node.getUsername().compareTo(maximumNode.getUsername()) < 0) {
-                    maximumNode = node;
+                if (currentNode.getUsername().compareTo(maximumNode.getUsername()) < 0) {
+                    maximumNode = currentNode;
                 }
             } else if (followsCount > followsCountMaximum) {
-                maximumNode = node;
+                maximumNode = currentNode;
             }
-            node = node.getNextNode();
+            currentNode = currentNode.getNextNode();
         }
         return maximumNode.getUsername();
     }
 
-    public float twoDegreeSeperation() {
-        Node user = this.head;
-        return 0;
+    public String twoDegreeSeperation() {
+        Node currentNode = graph.findNode(firstUserName(fileName));
+        LinkedHashSet<Node> followers = graph.getFollowersOfNode(currentNode.getUsername());
+        LinkedHashSet<Node> followersDeep = new LinkedHashSet<>();
+
+        if (currentNode != null) {
+            
+        }
+
+        return null;
     }
 
     public float medianOfFollowers() {
-        Node node = this.head;
+        Node currentNode = this.head;
         ArrayList<Integer> followerCounts = new ArrayList<>();
-        while (node != null) {
-            followerCounts.add(node.getNumberOfFollows());
-            node = node.getNextNode();
+        while (currentNode != null) {
+            followerCounts.add(currentNode.getNumberOfFollows());
+            currentNode = currentNode.getNextNode();
         }
 
         int mid = followerCounts.size() / 2;
@@ -112,5 +105,19 @@ public class GraphTool {
         System.out.println("Task 4: " + twoDegreeSeperation());
         System.out.println("Task 5: " + medianOfFollowers());
         System.out.println("Task 6: " + mostPropogated());
+    }
+
+    private String firstUserName (String fileName) {
+        try {
+            File file = new File(fileName);
+            Scanner scanner = new Scanner(file);
+            String line = scanner.nextLine();
+            String[] users = line.split(" ");                
+            scanner.close();
+            return users[0];
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }
