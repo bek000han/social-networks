@@ -79,9 +79,9 @@ public class Graph {
         return this.head;
     }
 
-    public LinkedHashSet<Node> getFollowersOfNode(String nodeName) {
+    public LinkedHashSet<Node> getFollowersOfNode(Node nodeName) {
         Node currentNode = this.head;
-        Node targetNode = findNode(nodeName);
+        Node targetNode = nodeName;
         LinkedHashSet<Node> followers = new LinkedHashSet<>();
 
         while(targetNode != null && currentNode != null) {

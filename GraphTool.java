@@ -1,6 +1,8 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Scanner;
@@ -25,15 +27,18 @@ public class GraphTool {
             edges += currentNode.getNumberOfFollows();
             currentNode = currentNode.getNextNode();
         }
-        return (1.0 * edges / (nodes * (nodes - 1)));
+        return (1.0 * edges / (nodes * (nodes - 1))); // using the given formula
     }
 
     public String mostFollowed() {
         Node maximumNode = head;
         Node currentNode = head.getNextNode();
+
+        // keeps a var of node with max value so far
+        // gets replaced if max numerically higher or if var is alphabetically higher
         while (currentNode != null) {
-            int followersCount = graph.getFollowersOfNode(currentNode.getUsername()).size();
-            int followersCountMaximum = graph.getFollowersOfNode(maximumNode.getUsername()).size();
+            int followersCount = graph.getFollowersOfNode(currentNode).size();
+            int followersCountMaximum = graph.getFollowersOfNode(maximumNode).size();
 
             if (followersCount == followersCountMaximum) {
                 if (currentNode.getUsername().compareTo(maximumNode.getUsername()) < 0) {
@@ -50,6 +55,8 @@ public class GraphTool {
     public String mostFollowing() {
         Node maximumNode = head;
         Node currentNode = head.getNextNode();
+
+        // very similar to mostFollowed method structure
         while (currentNode != null) {
             int followsCount = currentNode.getNumberOfFollows();
             int followsCountMaximum = maximumNode.getNumberOfFollows();
@@ -66,31 +73,43 @@ public class GraphTool {
         return maximumNode.getUsername();
     }
 
-    public String twoDegreeSeperation() {
+    // 2 degree separation = the followers of the main node's followers who are not following the main node
+    public int twoDegreeSeperation() {
         Node currentNode = graph.findNode(firstUserName(fileName));
-        LinkedHashSet<Node> followers = graph.getFollowersOfNode(currentNode.getUsername());
-        LinkedHashSet<Node> followersDeep = new LinkedHashSet<>();
-
-        if (currentNode != null) {
-            
+        LinkedHashSet<Node> followers = graph.getFollowersOfNode(currentNode);
+        LinkedHashSet<Node> twoDegFollowers = new LinkedHashSet<>();
+        LinkedHashSet<Node> temp = new LinkedHashSet<>();
+        
+        // nested loop for finding the followers of followers
+        for (Node oneDegfollower : followers) {
+            temp = graph.getFollowersOfNode(oneDegfollower);
+            for (Node twoDegFollower : temp) {
+                if (twoDegFollower != currentNode && 
+                !followers.contains(twoDegFollower) && 
+                !twoDegFollowers.contains(twoDegFollower)) {
+                    twoDegFollowers.add(twoDegFollower);
+                }
+            }
         }
-
-        return null;
+        return twoDegFollowers.size();
     }
 
-    public float medianOfFollowers() {
+    public int medianOfFollowers() {
         Node currentNode = this.head;
         ArrayList<Integer> followerCounts = new ArrayList<>();
         while (currentNode != null) {
-            followerCounts.add(currentNode.getNumberOfFollows());
+            followerCounts.add(graph.getFollowersOfNode(currentNode).size());
             currentNode = currentNode.getNextNode();
         }
+        Collections.sort(followerCounts);
 
+        // extra precaution if list length is not odd
+        // picks the mid value of the mid values in evenly sized lists
         int mid = followerCounts.size() / 2;
         if (followerCounts.size() % 2 != 0) {
-            return (followerCounts.get(mid));
+            return followerCounts.get(mid).intValue();
         } else {
-            return (followerCounts.get((followerCounts.get(mid) + followerCounts.get(mid - 1)) / 2));
+            return followerCounts.get((followerCounts.get(mid) + followerCounts.get(mid - 1)) / 2).intValue();
         }
     }
 
@@ -99,7 +118,8 @@ public class GraphTool {
     }
 
     public void displayResults() {
-        System.out.println("Task 1: " + density());
+        DecimalFormat densityF = new DecimalFormat("#.########");
+        System.out.println("Task 1: " + densityF.format(density()));
         System.out.println("Task 2: " + mostFollowed());
         System.out.println("Task 3: " + mostFollowing());
         System.out.println("Task 4: " + twoDegreeSeperation());
