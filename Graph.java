@@ -5,14 +5,17 @@ import java.util.Scanner;
 
 public class Graph {
     private Node head;
+    private String file;
 
     // empty graph constructor
     public Graph() {
         this.head = null;
+        this.file = null;
     }
 
     // if file supplied as arg, a populated graph is created from file
     public Graph(String fileToRead) {
+        this.file = fileToRead;
         try {
             File file = new File(fileToRead);
             Scanner scanner = new Scanner(file);
@@ -80,7 +83,8 @@ public class Graph {
     }
 
     // vital method for graphtool
-    // compiles a list of followers from the follows
+    // compiles a list of followers by traversing linked list
+    // and checking the follows list of node
     public LinkedHashSet<Node> getFollowersOfNode(Node nodeName) {
         Node currentNode = this.head;
         Node targetNode = nodeName;
@@ -94,12 +98,11 @@ public class Graph {
         }
         return followers;
     }
-
     
-    // recursive function to propogate message
-    // gets followers and recursively calls function on follower by order
+    // recursive function to propogate message:
+    // gets followers and recursively calls function on follower in order
     // skips follower if already visited
-    // a visited list is maintained throughout the calls
+    // a list of visited nodes is maintained throughout the calls
     public int propogate(Node node, LinkedHashSet<Node> visited) {
         LinkedHashSet<Node> followers = this.getFollowersOfNode(node);
         visited.add(node);
@@ -114,5 +117,20 @@ public class Graph {
         // an optional return value - useful for the graphtool
         // minus 1 because propogating to yourself does not count
         return visited.size() - 1;
+    }
+
+    // simply finds the first user in the file
+    public String firstUserName () {
+        try {
+            File file = new File(this.file);
+            Scanner scanner = new Scanner(file);
+            String line = scanner.nextLine();
+            String[] users = line.split(" ");                
+            scanner.close();
+            return users[0];
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }

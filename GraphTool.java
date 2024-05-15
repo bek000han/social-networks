@@ -1,20 +1,15 @@
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Scanner;
 
 public class GraphTool {
     private Graph graph;
     private Node head;
-    private String fileName;
 
-    public GraphTool(Graph graph, String fileName) {
+    public GraphTool(Graph graph) {
         this.graph = graph;
         this.head = this.graph.getHeadNode();
-        this.fileName = fileName;
     }
 
     public double density() {
@@ -29,13 +24,15 @@ public class GraphTool {
         return (1.0 * edges / (nodes * (nodes - 1))); // using the given formula
     }
 
-    // generic find maximum function
+    // generic 'find maximum' function
+    // maintains node with max value so far
+    // replaces node if max of current is numerically higher  
+    // OR if they are numerically equal but current is alphabetically higher
     private Node findMaximum(Node currentNode, Node maxNode, int countMax, String type) {
-        // maintains node with max value so far
-        // gets replaced if max numerically higher 
-        // or if var is numerically equal but alphabetically higher
+        
         int count = 0;
         while (currentNode != null) {
+            // type determines how the count is enumerated
             switch (type) {
                 case "mostFollowed":
                     count = graph.getFollowersOfNode(currentNode).size();
@@ -82,14 +79,15 @@ public class GraphTool {
         return maximumNode.getUsername();
     }
 
-    // 2 degree separation = the followers of the main node's followers who are not following the main node
+    // 2 degree separation - the followers of the main node's followers who are not following the main node
     public int twoDegreeSeperation() {
-        Node currentNode = graph.findNode(firstUserName(fileName));
+        Node currentNode = graph.findNode(graph.firstUserName());
         LinkedHashSet<Node> followers = graph.getFollowersOfNode(currentNode);
         LinkedHashSet<Node> twoDegFollowers = new LinkedHashSet<>();
         LinkedHashSet<Node> temp = new LinkedHashSet<>();
         
         // nested loop for finding the followers of followers
+        // as per definition, checks if requirements for 2DoS fulfilled
         for (Node oneDegfollower : followers) {
             temp = graph.getFollowersOfNode(oneDegfollower);
             for (Node twoDegFollower : temp) {
@@ -110,7 +108,7 @@ public class GraphTool {
             followerCounts.add(graph.getFollowersOfNode(currentNode).size());
             currentNode = currentNode.getNextNode();
         }
-        Collections.sort(followerCounts);
+        Collections.sort(followerCounts); // has to be sorted for median
 
         // extra precaution if list length is not odd
         // picks the mid value of the mid values in evenly sized lists
@@ -122,6 +120,7 @@ public class GraphTool {
         }
     }
 
+    // most propogated - acyclically traversing through followers of followers and so on
     public String mostPropogated() {
         Node maximumNode = head;
         int propogationsCountMaximum = graph.propogate(maximumNode, new LinkedHashSet<>());
@@ -139,19 +138,5 @@ public class GraphTool {
         System.out.println("Number of 2-DoS people for 1st person: " + twoDegreeSeperation());
         System.out.println("Median number of followers: " + medianOfFollowers());
         System.out.println("Person with the most propogation: " + mostPropogated());
-    }
-
-    private String firstUserName (String fileName) {
-        try {
-            File file = new File(fileName);
-            Scanner scanner = new Scanner(file);
-            String line = scanner.nextLine();
-            String[] users = line.split(" ");                
-            scanner.close();
-            return users[0];
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
-            return null;
-        }
     }
 }
