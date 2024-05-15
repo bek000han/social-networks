@@ -4,5 +4,4 @@ class Analysis {
         GraphTool tool = new GraphTool(Dapper, args[0]);
         tool.displayResults();
     }
-
 }

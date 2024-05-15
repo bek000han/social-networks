@@ -79,6 +79,8 @@ public class Graph {
         return this.head;
     }
 
+    // vital method for graphtool
+    // compiles a list of followers from the follows
     public LinkedHashSet<Node> getFollowersOfNode(Node nodeName) {
         Node currentNode = this.head;
         Node targetNode = nodeName;
