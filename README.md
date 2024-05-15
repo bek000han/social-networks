@@ -1,4 +1,4 @@
-# Social Networks: Solo Project for Summer Term
+# Social Networks: summer term project x1
 
 'Dapper' is a basic social network simulation program, which uses the Graph ADT as its foundation. This project was made as part of the summer term coursework, and the tasks are laid out below.
 
