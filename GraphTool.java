@@ -119,12 +119,12 @@ public class GraphTool {
 
     public void displayResults() {
         DecimalFormat densityF = new DecimalFormat("#.########");
-        System.out.println("Task 1: " + densityF.format(density()));
-        System.out.println("Task 2: " + mostFollowed());
-        System.out.println("Task 3: " + mostFollowing());
-        System.out.println("Task 4: " + twoDegreeSeperation());
-        System.out.println("Task 5: " + medianOfFollowers());
-        System.out.println("Task 6: " + mostPropogated());
+        System.out.println("Density of the graph: " + densityF.format(density()));
+        System.out.println("Person with the most followers: " + mostFollowed());
+        System.out.println("Person who follows the most: " + mostFollowing());
+        System.out.println("Number of people at 2-DoS for first person: " + twoDegreeSeperation());
+        System.out.println("Median number of followers: " + medianOfFollowers());
+        System.out.println("Person with the most propogation: " + mostPropogated());
     }
 
     private String firstUserName (String fileName) {
