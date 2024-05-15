@@ -94,4 +94,25 @@ public class Graph {
         }
         return followers;
     }
+
+    
+    // recursive function to propogate message
+    // gets followers and recursively calls function on follower by order
+    // skips follower if already visited
+    // a visited list is maintained throughout the calls
+    public int propogate(Node node, LinkedHashSet<Node> visited) {
+        LinkedHashSet<Node> followers = this.getFollowersOfNode(node);
+        visited.add(node);
+
+        for (Node follower : followers) {
+            if (visited.contains(follower)) {
+                continue;
+            }
+            propogate(follower, visited);
+        }
+
+        // an optional return value - useful for the graphtool
+        // minus 1 because propogating to yourself does not count
+        return visited.size() - 1;
+    }
 }

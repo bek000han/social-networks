@@ -29,46 +29,56 @@ public class GraphTool {
         return (1.0 * edges / (nodes * (nodes - 1))); // using the given formula
     }
 
-    public String mostFollowed() {
-        Node maximumNode = head;
-        Node currentNode = head.getNextNode();
-
-        // keeps a var of node with max value so far
-        // gets replaced if max numerically higher or if var is alphabetically higher
+    // generic find maximum function
+    private Node findMaximum(Node currentNode, Node maxNode, int countMax, String type) {
+        // maintains node with max value so far
+        // gets replaced if max numerically higher 
+        // or if var is numerically equal but alphabetically higher
+        int count = 0;
         while (currentNode != null) {
-            int followersCount = graph.getFollowersOfNode(currentNode).size();
-            int followersCountMaximum = graph.getFollowersOfNode(maximumNode).size();
+            switch (type) {
+                case "mostFollowed":
+                    count = graph.getFollowersOfNode(currentNode).size();
+                    break;
+                case "mostFollowing":
+                    count = currentNode.getNumberOfFollows();
+                    break;
+                case "mostPropogated":
+                    count = graph.propogate(currentNode, new LinkedHashSet<>());
+                    break;
+                default:
+                    System.out.println("Incorrect type supplied");
+                    return null;
+            }
 
-            if (followersCount == followersCountMaximum) {
-                if (currentNode.getUsername().compareTo(maximumNode.getUsername()) < 0) {
-                    maximumNode = currentNode;
+            if (count == countMax) {
+                if (currentNode.getUsername().compareTo(maxNode.getUsername()) < 0) {
+                    maxNode = currentNode;
                 }
-            } else if (followersCount > followersCountMaximum) {
-                maximumNode = currentNode;
+            } else if (count > countMax) {
+                countMax = count;
+                maxNode = currentNode;
             }
             currentNode = currentNode.getNextNode();
         }
+        return maxNode;
+    }
+
+    public String mostFollowed() {
+        Node maximumNode = head;
+        int followersCountMaximum = graph.getFollowersOfNode(maximumNode).size();
+        Node currentNode = head.getNextNode();
+        maximumNode = findMaximum(currentNode, maximumNode, followersCountMaximum, "mostFollowed");
+
         return maximumNode.getUsername();
     }
     
     public String mostFollowing() {
         Node maximumNode = head;
+        int followsCountMaximum = maximumNode.getNumberOfFollows();
         Node currentNode = head.getNextNode();
+        maximumNode = findMaximum(currentNode, maximumNode, followsCountMaximum, "mostFollowing");
 
-        // very similar to mostFollowed method structure
-        while (currentNode != null) {
-            int followsCount = currentNode.getNumberOfFollows();
-            int followsCountMaximum = maximumNode.getNumberOfFollows();
-
-            if (followsCount == followsCountMaximum) {
-                if (currentNode.getUsername().compareTo(maximumNode.getUsername()) < 0) {
-                    maximumNode = currentNode;
-                }
-            } else if (followsCount > followsCountMaximum) {
-                maximumNode = currentNode;
-            }
-            currentNode = currentNode.getNextNode();
-        }
         return maximumNode.getUsername();
     }
 
@@ -113,7 +123,12 @@ public class GraphTool {
     }
 
     public String mostPropogated() {
-        return null;
+        Node maximumNode = head;
+        int propogationsCountMaximum = graph.propogate(maximumNode, new LinkedHashSet<>());
+        Node currentNode = head.getNextNode();
+        maximumNode = findMaximum(currentNode, maximumNode, propogationsCountMaximum, "mostPropogated");
+        
+        return maximumNode.getUsername();
     }
 
     public void displayResults() {
@@ -121,7 +136,7 @@ public class GraphTool {
         System.out.println("Density of the graph: " + densityF.format(density()));
         System.out.println("Person with the most followers: " + mostFollowed());
         System.out.println("Person who follows the most: " + mostFollowing());
-        System.out.println("Number of people at 2-DoS for first person: " + twoDegreeSeperation());
+        System.out.println("Number of 2-DoS people for 1st person: " + twoDegreeSeperation());
         System.out.println("Median number of followers: " + medianOfFollowers());
         System.out.println("Person with the most propogation: " + mostPropogated());
     }

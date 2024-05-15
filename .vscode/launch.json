@@ -12,11 +12,11 @@
             [
                 "test/social-network1.txt"
             ],
-            "mainClass": "${file}"
+            "mainClass": "Analysis"
         },
         {
             "type": "java",
-            "name": "Main",
+            "name": "Analysis",
             "request": "launch",
             "mainClass": "Main",
             "projectName": "x1-summer-project_7e3cea36"
